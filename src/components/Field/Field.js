@@ -11,9 +11,9 @@ const Field = () => {
   const columns = 5;
 
   return (
-    <div className="field" style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 50px [col-start])` }}>
+    <div className="field" style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 50px [col-start])`, gridAutoRows: '50px' }}>
       {range(1, rows * columns).map(id => (
-        <Cell key={id} id={id} />
+        <Cell key={id} />
       ))}
     </div>
   )
