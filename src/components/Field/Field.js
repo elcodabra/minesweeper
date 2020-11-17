@@ -17,6 +17,7 @@ const getRandomNumber = (excluded, size) => {
 
 const Field = () => {
   const [bombs, setBombs] = useState(null);
+  const [opened, setOpened] = useState([]);
   console.log('Field');
 
   const rows = 5;
@@ -31,15 +32,18 @@ const Field = () => {
         randoms[i] = getRandomNumber([id, ...randoms], length);
       }
       setBombs(randoms);
+      setOpened([id]);
     } else {
-
+      if (opened.indexOf(id) === -1) {
+        setOpened([...opened, id]);
+      }
     }
   }
 
   return (
     <div className="field" style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 50px [col-start])`, gridAutoRows: '50px' }}>
       {range(1, length).map(id => (
-        <Cell key={id} hasBomb={bombs && bombs.indexOf(id) > -1} onClick={handleClick} />
+        <Cell key={id} id={id} isOpened={opened.indexOf(id) > -1} isBomb={bombs && bombs.indexOf(id) > -1} onClick={handleClick} />
       ))}
     </div>
   )
