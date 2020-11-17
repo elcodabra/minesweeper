@@ -18,6 +18,8 @@ const getRandomNumber = (excluded, size) => {
 const Field = () => {
   const [bombs, setBombs] = useState(null);
   const [opened, setOpened] = useState([]);
+  const [completed, setCompleted] = useState([]);
+  const [fail, setFail] = useState(null);
   console.log('Field');
 
   const rows = 5;
@@ -34,18 +36,36 @@ const Field = () => {
       setBombs(randoms);
       setOpened([id]);
     } else {
-      if (opened.indexOf(id) === -1) {
+      if (bombs.indexOf(id) > -1) {
+        setOpened(range(1, length));
+        setFail(id);
+      } else if (opened.indexOf(id) === -1) {
         setOpened([...opened, id]);
       }
     }
   }
 
   return (
-    <div className="field" style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 50px [col-start])`, gridAutoRows: '50px' }}>
-      {range(1, length).map(id => (
-        <Cell key={id} id={id} isOpened={opened.indexOf(id) > -1} isBomb={bombs && bombs.indexOf(id) > -1} onClick={handleClick} />
-      ))}
-    </div>
+    <>
+      {completed.length === BOMBS_LENGTH && opened.length === length - BOMBS_LENGTH && (
+        <p>Your win!</p>
+      )}
+      {fail !== null && (
+        <p>Fail!</p>
+      )}
+      <div className="field" style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 50px [col-start])`, gridAutoRows: '50px' }}>
+        {range(1, length).map(id => (
+          <Cell
+            key={id}
+            id={id}
+            isOpened={opened.indexOf(id) > -1}
+            isFailed={fail === id}
+            isBomb={bombs && bombs.indexOf(id) > -1}
+            onClick={handleClick}
+          />
+        ))}
+      </div>
+    </>
   )
 }
 

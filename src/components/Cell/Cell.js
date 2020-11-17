@@ -1,14 +1,14 @@
 import React from 'react';
 
-const Cell = ({ id, number, isBomb, isOpened, onClick }) => {
+const Cell = ({ id, number, isBomb, isOpened, isFailed, onClick }) => {
   console.log('Cell');
 
   return (
     <span
       className="cell"
-      style={{ backgroundColor: isOpened && isBomb ? 'red' : isOpened ? 'white' : 'gray', border: '1px solid darkgray' }}
+      style={{ backgroundColor: isFailed ? 'red' : isOpened ? 'white' : 'gray', border: '1px solid darkgray' }}
       onClick={() => onClick(id)}>
-      {number}
+      {isOpened && isBomb ? '💣' : number}
     </span>
   )
 }
