@@ -1,0 +1,20 @@
+.Field {
+  position: relative;
+}
+
+.Field-message {
+  position: absolute;
+  width: 100%;
+  color: black;
+  background: white;
+  top: 50%;
+  height: 100px;
+  margin-top: -50px;
+  border: 2px solid darkgray;
+  box-sizing: border-box;
+}
+
+.Field-container {
+  display: grid;
+  grid-auto-rows: 50px;
+}

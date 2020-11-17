@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import Cell from '../Cell';
 
+import './Field.css';
+
 const range = (start, stop, step = 1) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
 
 const BOMBS_LENGTH = 10;
@@ -55,15 +57,22 @@ const Field = () => {
     }
   }
 
+  const isSuccess = completed.length === BOMBS_LENGTH && opened.length === length - BOMBS_LENGTH;
+  const isFail = fail !== null;
+
   return (
-    <>
-      {completed.length === BOMBS_LENGTH && opened.length === length - BOMBS_LENGTH && (
-        <p>Your win!</p>
+    <div className="Field">
+      {(isSuccess || isFail) && (
+        <div className="Field-message">
+          {isSuccess && (
+            <p>Your win!</p>
+          )}
+          {isFail && (
+            <p>Fail!</p>
+          )}
+        </div>
       )}
-      {fail !== null && (
-        <p>Fail!</p>
-      )}
-      <div className="field" style={{ display: 'grid', gridTemplateColumns: `repeat(${columns}, 50px [col-start])`, gridAutoRows: '50px' }}>
+      <div className="Field-container" style={{ gridTemplateColumns: `repeat(${columns}, 50px [col-start])`, pointerEvents: isSuccess || isFail ? 'none' : 'all' }}>
         {range(1, length).map(id => (
           <Cell
             key={id}
@@ -77,7 +86,7 @@ const Field = () => {
           />
         ))}
       </div>
-    </>
+    </div>
   )
 }
 
