@@ -45,6 +45,16 @@ const Field = () => {
     }
   }
 
+  const handleRightClick = (id) => {
+    if (completed.indexOf(id) > -1) {
+      const array = [...completed];
+      array.splice(completed.indexOf(id), 1);
+      setCompleted(array);
+    } else {
+      setCompleted([ ...completed, id ])
+    }
+  }
+
   return (
     <>
       {completed.length === BOMBS_LENGTH && opened.length === length - BOMBS_LENGTH && (
@@ -58,10 +68,12 @@ const Field = () => {
           <Cell
             key={id}
             id={id}
+            isCompleted={completed.indexOf(id) > -1}
             isOpened={opened.indexOf(id) > -1}
             isFailed={fail === id}
             isBomb={bombs && bombs.indexOf(id) > -1}
             onClick={handleClick}
+            onRightClick={handleRightClick}
           />
         ))}
       </div>
