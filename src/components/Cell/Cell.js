@@ -15,7 +15,7 @@ const Cell = ({ id, number, isBomb, isCompleted, isOpened, isFailed, onClick, on
         onRightClick(id);
       }}
     >
-      {isOpened && isBomb ? '💣' : isCompleted ? '⛳' : number}
+      {isOpened && isBomb ? '💣' : isCompleted && !isOpened ? '⛳' : number}
     </span>
   )
 }

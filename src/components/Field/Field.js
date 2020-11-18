@@ -8,7 +8,6 @@ const range = (start, stop, step = 1) => Array.from({ length: (stop - start) / s
 
 const BOMBS_LENGTH = 10;
 
-// include = [1,3,4,5] exclude [4]
 const getRandomNumber = (excluded, size) => {
   let random = -1;
   while (random === -1 || excluded.indexOf(random) > -1) {
@@ -17,8 +16,55 @@ const getRandomNumber = (excluded, size) => {
   return random;
 }
 
+const getSiblings = (num, rows, columns) => {
+  let siblings = [];
+
+  const x = num % columns || columns;
+  const y = Math.ceil(num / columns);
+  const length = rows * columns;
+
+  if (x - 1 > 0) {
+    siblings.push(num - 1);
+
+    if (y - 1 > 0) {
+      siblings.push(num - 1 - columns);
+    }
+
+    if (y + 1 <= rows) {
+      siblings.push(num - 1 + columns);
+    }
+  }
+
+  if (y - 1 > 0) {
+    siblings.push(num - columns);
+  }
+
+  if (y + 1 <= length) {
+    siblings.push(num + columns);
+  }
+
+  if (x + 1 <= columns) {
+    siblings.push(num + 1);
+
+    if (y - 1 > 0) {
+      siblings.push(num + 1 - columns);
+    }
+
+    if (y + 1 <= rows) {
+      siblings.push(num + 1 + columns);
+    }
+  }
+
+  return siblings.sort();
+}
+
+const getNumbersForId = (id, rows, columns, bombs) => {
+  const siblings = getSiblings(id, rows, columns);
+  return siblings.filter(id => bombs.indexOf(id) === -1);
+}
+
 const Field = () => {
-  const [bombs, setBombs] = useState(null);
+  const [bombs, setBombs] = useState([]);
   const [opened, setOpened] = useState([]);
   const [completed, setCompleted] = useState([]);
   const [fail, setFail] = useState(null);
@@ -29,20 +75,22 @@ const Field = () => {
   const length = rows * columns;
 
   const handleClick = (id) => {
-    if (!bombs) {
+    if (!bombs.length) {
       let randoms = []
       for (let i = 0; i < BOMBS_LENGTH; i++) {
         // TODO: refactor
         randoms[i] = getRandomNumber([id, ...randoms], length);
       }
+      const siblings = getNumbersForId(id, rows, columns, randoms);
       setBombs(randoms);
-      setOpened([id]);
+      setOpened([...siblings, id]);
     } else {
       if (bombs.indexOf(id) > -1) {
         setOpened(range(1, length));
         setFail(id);
       } else if (opened.indexOf(id) === -1) {
-        setOpened([...opened, id]);
+        const siblings = getNumbersForId(id, rows, columns, bombs);
+        setOpened([...opened, ...siblings, id]);
       }
     }
   }
@@ -77,6 +125,7 @@ const Field = () => {
           <Cell
             key={id}
             id={id}
+            number={null}
             isCompleted={completed.indexOf(id) > -1}
             isOpened={opened.indexOf(id) > -1}
             isFailed={fail === id}
