@@ -58,10 +58,11 @@ const getSiblings = (num, rows, columns) => {
   return siblings.sort();
 }
 
-const getNumbersForId = (id, rows, columns, bombs) => {
-  const siblings = getSiblings(id, rows, columns);
-  return siblings.filter(id => bombs.indexOf(id) === -1);
-}
+const getSiblingsForId = (id, rows, columns, bombs) =>
+  getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) === -1);
+
+const getNumberById = (id, rows, columns, bombs) =>
+  getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) > -1).length || null;
 
 const Field = () => {
   const [bombs, setBombs] = useState([]);
@@ -81,7 +82,7 @@ const Field = () => {
         // TODO: refactor
         randoms[i] = getRandomNumber([id, ...randoms], length);
       }
-      const siblings = getNumbersForId(id, rows, columns, randoms);
+      const siblings = getSiblingsForId(id, rows, columns, randoms);
       setBombs(randoms);
       setOpened([...siblings, id]);
     } else {
@@ -89,8 +90,8 @@ const Field = () => {
         setOpened(range(1, length));
         setFail(id);
       } else if (opened.indexOf(id) === -1) {
-        const siblings = getNumbersForId(id, rows, columns, bombs);
-        setOpened([...opened, ...siblings, id]);
+        const siblings = getSiblingsForId(id, rows, columns, bombs);
+        setOpened([...new Set([...opened, ...siblings, id])]);
       }
     }
   }
@@ -107,6 +108,9 @@ const Field = () => {
 
   const isSuccess = completed.length === BOMBS_LENGTH && opened.length === length - BOMBS_LENGTH;
   const isFail = fail !== null;
+
+  console.log('completed:', completed.length);
+  console.log('opened:', opened.length);
 
   return (
     <div className="Field">
@@ -125,7 +129,7 @@ const Field = () => {
           <Cell
             key={id}
             id={id}
-            number={null}
+            number={getNumberById(id, rows, columns, bombs)}
             isCompleted={completed.indexOf(id) > -1}
             isOpened={opened.indexOf(id) > -1}
             isFailed={fail === id}

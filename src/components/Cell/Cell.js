@@ -8,14 +8,14 @@ const Cell = ({ id, number, isBomb, isCompleted, isOpened, isFailed, onClick, on
   return (
     <span
       className="Cell"
-      style={{ backgroundColor: isFailed ? 'red' : isOpened ? 'white' : 'gray' }}
+      style={{ backgroundColor: isFailed ? 'red' : isOpened ? 'white' : 'gray', color: 'gray' }}
       onClick={() => !isCompleted && onClick(id)}
       onContextMenu={(e) => {
         e.preventDefault();
         onRightClick(id);
       }}
     >
-      {isOpened && isBomb ? '💣' : isCompleted && !isOpened ? '⛳' : number}
+      {isOpened && isBomb ? '💣' : isCompleted && !isOpened ? '⛳' : isOpened && number}
     </span>
   )
 }
