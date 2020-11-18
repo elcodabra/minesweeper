@@ -20,4 +20,4 @@ const Cell = ({ id, number, isBomb, isCompleted, isOpened, isFailed, onClick, on
   )
 }
 
-export default Cell;
+export default React.memo(Cell);

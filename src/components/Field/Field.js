@@ -6,11 +6,11 @@ import './Field.css';
 
 const range = (start, stop, step = 1) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
 
-const BOMBS_LENGTH = 10;
+const BOMBS_LENGTH = 5;
 
 const getRandomNumber = (excluded, size) => {
-  let random = -1;
-  while (random === -1 || excluded.indexOf(random) > -1) {
+  let random = 0;
+  while (!random || excluded.indexOf(random) > -1) {
     random = Math.floor(Math.random() * size);
   }
   return random;
@@ -21,7 +21,6 @@ const getSiblings = (num, rows, columns) => {
 
   const x = num % columns || columns;
   const y = Math.ceil(num / columns);
-  const length = rows * columns;
 
   if (x - 1 > 0) {
     siblings.push(num - 1);
@@ -39,7 +38,7 @@ const getSiblings = (num, rows, columns) => {
     siblings.push(num - columns);
   }
 
-  if (y + 1 <= length) {
+  if (y + 1 <= rows) {
     siblings.push(num + columns);
   }
 
@@ -66,6 +65,7 @@ const getNumberById = (id, rows, columns, bombs) =>
 
 const Field = () => {
   const [bombs, setBombs] = useState([]);
+  const [numbers, setNumbers] = useState([]);
   const [opened, setOpened] = useState([]);
   const [completed, setCompleted] = useState([]);
   const [fail, setFail] = useState(null);
@@ -77,13 +77,18 @@ const Field = () => {
 
   const handleClick = (id) => {
     if (!bombs.length) {
-      let randoms = []
+      let randoms = [];
+      let numbersBeforeBombs = [];
       for (let i = 0; i < BOMBS_LENGTH; i++) {
-        // TODO: refactor
         randoms[i] = getRandomNumber([id, ...randoms], length);
+      }
+      for (let i = 0; i < length; i++) {
+        const number = getNumberById(i + 1, rows, columns, randoms);
+        numbersBeforeBombs[i] = randoms.indexOf(i + 1) > -1 ? false : number;
       }
       const siblings = getSiblingsForId(id, rows, columns, randoms);
       setBombs(randoms);
+      setNumbers(numbersBeforeBombs);
       setOpened([...siblings, id]);
     } else {
       if (bombs.indexOf(id) > -1) {
@@ -109,8 +114,10 @@ const Field = () => {
   const isSuccess = completed.length === BOMBS_LENGTH && opened.length === length - BOMBS_LENGTH;
   const isFail = fail !== null;
 
+  console.log('numbers:', numbers);
   console.log('completed:', completed.length);
   console.log('opened:', opened.length);
+  console.log('bombs:', bombs.length);
 
   return (
     <div className="Field">
@@ -143,4 +150,4 @@ const Field = () => {
   )
 }
 
-export default Field;
+export default React.memo(Field);
