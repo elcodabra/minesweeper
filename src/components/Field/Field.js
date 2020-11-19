@@ -54,7 +54,7 @@ const getSiblings = (num, rows, columns) => {
     }
   }
 
-  return siblings.sort();
+  return siblings;
 }
 
 const getSiblingsForId = (id, rows, columns, bombs, siblings = {}) =>
@@ -74,7 +74,6 @@ const getNumberById = (id, rows, columns, bombs) =>
 
 const Field = () => {
   const [bombs, setBombs] = useState([]);
-  // const [numbers, setNumbers] = useState([]);
   const [opened, setOpened] = useState({});
   const [completed, setCompleted] = useState([]);
   const [fail, setFail] = useState(null);
@@ -88,16 +87,9 @@ const Field = () => {
     if (!bombs.length) {
       let randoms = [];
       for (let i = 0; i < BOMBS_LENGTH; i++) {
+        // TODO: hide bomb number & add compare fn for num
         randoms[i] = getRandomNumber([id, ...randoms], length);
       }
-      /*
-      let numbersBeforeBombs = [];
-      for (let i = 0; i < length; i++) {
-        const number = getNumberById(i + 1, rows, columns, randoms);
-        numbersBeforeBombs[i] = randoms.indexOf(i + 1) > -1 ? false : number;
-      }
-      setNumbers(numbersBeforeBombs);
-      */
       const siblings = getSiblingsForId(id, rows, columns, randoms);
       setBombs(randoms);
       setOpened({
@@ -130,7 +122,6 @@ const Field = () => {
   const isSuccess = completed.length === BOMBS_LENGTH && Object.keys(opened).length === length - BOMBS_LENGTH;
   const isFail = fail !== null;
 
-  // console.log('numbers:', numbers);
   console.log('completed:', completed.length);
   console.log('opened:', Object.keys(opened).length);
   console.log('bombs:', bombs.length);
@@ -147,16 +138,21 @@ const Field = () => {
           )}
         </div>
       )}
-      <div className="Field-container" style={{ gridTemplateColumns: `repeat(${columns}, 50px [col-start])`, pointerEvents: isSuccess || isFail ? 'none' : 'all' }}>
+      <div
+        className="Field-container"
+        style={{
+          gridTemplateColumns: `repeat(${columns}, 50px [col-start])`,
+          pointerEvents: isSuccess || isFail ? 'none' : 'all',
+        }}
+      >
         {range(1, length).map(id => (
           <Cell
-            key={id}
             id={id}
+            key={id}
             number={opened[id]}
             isCompleted={completed.indexOf(id) > -1}
-            isOpened={opened[id] !== undefined} // TODO: remove
-            isFailed={fail === id}
-            isBomb={bombs && bombs.indexOf(id) > -1} // TODO: remove
+            isBomb={bombs && bombs.indexOf(id) > -1} // TODO: refactor
+            isFailed={fail === id} // TODO: remove
             onClick={handleClick}
             onRightClick={handleRightClick}
           />

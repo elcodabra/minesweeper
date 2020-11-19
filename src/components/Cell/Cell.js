@@ -2,13 +2,18 @@ import React from 'react';
 
 import './Cell.css';
 
-const Cell = ({ id, number, isBomb, isCompleted, isOpened, isFailed, onClick, onRightClick }) => {
+const Cell = ({ id, number, isBomb, isCompleted, isFailed, onClick, onRightClick }) => {
   console.log('Cell');
+
+  const isOpened = number || number === 0;
 
   return (
     <span
       className="Cell"
-      style={{ backgroundColor: isFailed ? 'red' : isOpened ? 'white' : 'gray', color: 'gray' }}
+      style={{
+        backgroundColor: isFailed ? 'red' : isOpened ? 'white' : 'gray',
+        color: 'gray',
+      }}
       onClick={() => !isCompleted && onClick(id)}
       onContextMenu={(e) => {
         e.preventDefault();
