@@ -57,11 +57,30 @@ const getSiblings = (num, rows, columns) => {
   return siblings.sort();
 }
 
-const getSiblingsForId = (id, rows, columns, bombs) =>
-  getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) === -1);
+const getSiblingsForId = (id, rows, columns, bombs, siblings = {}) =>
+  getSiblings(id, rows, columns).reduce((acc, curId, idx, src) => {
+    // return if already in set or have bomb
+    if (acc[curId] !== undefined || bombs.indexOf(curId) > -1) return acc;
+
+    const number = getNumberById(curId, rows, columns, bombs);
+    if (!number) {
+      return getSiblingsForId(curId, rows, columns, bombs, { ...acc, [curId]: number });
+    }
+    return { ...acc, [curId]: number };
+  }, siblings);
 
 const getNumberById = (id, rows, columns, bombs) =>
-  getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) > -1).length || null;
+  getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) > -1).length;
+
+/*
+const numbers = {
+  1: 2,
+  2: 0,
+  4: 3,
+}
+
+
+*/
 
 const Field = () => {
   const [bombs, setBombs] = useState([]);
@@ -87,16 +106,18 @@ const Field = () => {
         numbersBeforeBombs[i] = randoms.indexOf(i + 1) > -1 ? false : number;
       }
       const siblings = getSiblingsForId(id, rows, columns, randoms);
+      console.log('siblings:', siblings);
       setBombs(randoms);
       setNumbers(numbersBeforeBombs);
-      setOpened([...siblings, id]);
+      setOpened([...Object.keys(siblings).map(item => parseInt(item)), id]);
     } else {
       if (bombs.indexOf(id) > -1) {
         setOpened(range(1, length));
         setFail(id);
       } else if (opened.indexOf(id) === -1) {
         const siblings = getSiblingsForId(id, rows, columns, bombs);
-        setOpened([...new Set([...opened, ...siblings, id])]);
+        console.log('siblings:', siblings);
+        setOpened([...new Set([...opened, ...Object.keys(siblings).map(item => parseInt(item)), id])]);
       }
     }
   }
