@@ -17,7 +17,7 @@ const getRandomNumber = (excluded, size) => {
 }
 
 const getSiblings = (num, rows, columns) => {
-  let siblings = [];
+  let siblings = [num];
 
   const x = num % columns || columns;
   const y = Math.ceil(num / columns);
@@ -72,20 +72,10 @@ const getSiblingsForId = (id, rows, columns, bombs, siblings = {}) =>
 const getNumberById = (id, rows, columns, bombs) =>
   getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) > -1).length;
 
-/*
-const numbers = {
-  1: 2,
-  2: 0,
-  4: 3,
-}
-
-
-*/
-
 const Field = () => {
   const [bombs, setBombs] = useState([]);
   const [numbers, setNumbers] = useState([]);
-  const [opened, setOpened] = useState([]);
+  const [opened, setOpened] = useState({});
   const [completed, setCompleted] = useState([]);
   const [fail, setFail] = useState(null);
   console.log('Field');
@@ -106,18 +96,21 @@ const Field = () => {
         numbersBeforeBombs[i] = randoms.indexOf(i + 1) > -1 ? false : number;
       }
       const siblings = getSiblingsForId(id, rows, columns, randoms);
-      console.log('siblings:', siblings);
       setBombs(randoms);
       setNumbers(numbersBeforeBombs);
-      setOpened([...Object.keys(siblings).map(item => parseInt(item)), id]);
+      setOpened({
+        ...siblings,
+      });
     } else {
       if (bombs.indexOf(id) > -1) {
-        setOpened(range(1, length));
+        setOpened(range(1, length).reduce((acc, cur) => ({ ...acc, [cur]: getNumberById(cur + 1, rows, columns, bombs) }), {}));
         setFail(id);
-      } else if (opened.indexOf(id) === -1) {
+      } else if (!opened[id]) {
         const siblings = getSiblingsForId(id, rows, columns, bombs);
-        console.log('siblings:', siblings);
-        setOpened([...new Set([...opened, ...Object.keys(siblings).map(item => parseInt(item)), id])]);
+        setOpened({
+          ...opened,
+          ...siblings,
+        });
       }
     }
   }
@@ -132,12 +125,12 @@ const Field = () => {
     }
   }
 
-  const isSuccess = completed.length === BOMBS_LENGTH && opened.length === length - BOMBS_LENGTH;
+  const isSuccess = completed.length === BOMBS_LENGTH && Object.keys(opened).length === length - BOMBS_LENGTH;
   const isFail = fail !== null;
 
   console.log('numbers:', numbers);
   console.log('completed:', completed.length);
-  console.log('opened:', opened.length);
+  console.log('opened:', Object.keys(opened).length);
   console.log('bombs:', bombs.length);
 
   return (
@@ -157,11 +150,11 @@ const Field = () => {
           <Cell
             key={id}
             id={id}
-            number={getNumberById(id, rows, columns, bombs)}
+            number={opened[id]}
             isCompleted={completed.indexOf(id) > -1}
-            isOpened={opened.indexOf(id) > -1}
+            isOpened={opened[id] !== undefined} // TODO: remove
             isFailed={fail === id}
-            isBomb={bombs && bombs.indexOf(id) > -1}
+            isBomb={bombs && bombs.indexOf(id) > -1} // TODO: remove
             onClick={handleClick}
             onRightClick={handleRightClick}
           />
