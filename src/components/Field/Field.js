@@ -6,14 +6,21 @@ import './Field.css';
 
 const range = (start, stop, step = 1) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
 
-const BOMBS_LENGTH = 5;
-
 const getRandomNumber = (excluded, size) => {
   let random = 0;
   while (!random || excluded.indexOf(random) > -1) {
     random = Math.floor(Math.random() * size);
   }
   return random;
+}
+
+const getRandomArray = (length, bombsSize) => {
+  let randoms = [];
+  for (let i = 0; i < bombsSize; i++) {
+    // TODO: hide bomb number & add compare fn for num
+    randoms[i] = getRandomNumber(randoms, length);
+  }
+  return randoms;
 }
 
 const getSiblings = (num, rows, columns) => {
@@ -72,40 +79,26 @@ const getSiblingsForId = (id, rows, columns, bombs, siblings = {}) =>
 const getNumberById = (id, rows, columns, bombs) =>
   getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) > -1).length;
 
-const Field = () => {
-  const [bombs, setBombs] = useState([]);
+const Field = ({ rows = 50, columns = 50, bombsSize = 100 }) => {
+  const length = rows * columns;
+
+  const [bombs, setBombs] = useState(getRandomArray(length, bombsSize));
   const [opened, setOpened] = useState({});
   const [completed, setCompleted] = useState([]);
   const [fail, setFail] = useState(null);
-  console.log('Field');
 
-  const rows = 5;
-  const columns = 5;
-  const length = rows * columns;
+  const cells = React.useMemo(() => range(1, length), [length]);
 
   const handleClick = (id) => {
-    if (!bombs.length) {
-      let randoms = [];
-      for (let i = 0; i < BOMBS_LENGTH; i++) {
-        // TODO: hide bomb number & add compare fn for num
-        randoms[i] = getRandomNumber([id, ...randoms], length);
-      }
-      const siblings = getSiblingsForId(id, rows, columns, randoms);
-      setBombs(randoms);
+    if (bombs.indexOf(id) > -1) {
+      setOpened(cells.reduce((acc, cur) => ({ ...acc, [cur]: getNumberById(cur + 1, rows, columns, bombs) }), {}));
+      setFail(id);
+    } else if (!opened[id]) {
+      const siblings = getSiblingsForId(id, rows, columns, bombs);
       setOpened({
+        ...opened,
         ...siblings,
       });
-    } else {
-      if (bombs.indexOf(id) > -1) {
-        setOpened(range(1, length).reduce((acc, cur) => ({ ...acc, [cur]: getNumberById(cur + 1, rows, columns, bombs) }), {}));
-        setFail(id);
-      } else if (!opened[id]) {
-        const siblings = getSiblingsForId(id, rows, columns, bombs);
-        setOpened({
-          ...opened,
-          ...siblings,
-        });
-      }
     }
   }
 
@@ -119,9 +112,10 @@ const Field = () => {
     }
   }
 
-  const isSuccess = completed.length === BOMBS_LENGTH && Object.keys(opened).length === length - BOMBS_LENGTH;
+  const isSuccess = completed.length === bombsSize && Object.keys(opened).length === length - bombsSize;
   const isFail = fail !== null;
 
+  console.log('Field');
   console.log('completed:', completed.length);
   console.log('opened:', Object.keys(opened).length);
   console.log('bombs:', bombs.length);
@@ -145,10 +139,10 @@ const Field = () => {
           pointerEvents: isSuccess || isFail ? 'none' : 'all',
         }}
       >
-        {range(1, length).map(id => (
+        {cells.map(id => (
           <Cell
             id={id}
-            key={id}
+            key={`cell_${id}`}
             number={opened[id]}
             isCompleted={completed.indexOf(id) > -1}
             isBomb={bombs && bombs.indexOf(id) > -1} // TODO: refactor
