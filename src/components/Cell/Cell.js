@@ -5,20 +5,14 @@ import './Cell.css';
 const Cell = ({ id, number, isBomb, isCompleted, isFailed, onClick, onRightClick }) => {
   const isOpened = number || number === 0;
 
-  const handleClick = React.useCallback(
-    () => !isCompleted && !isOpened && onClick(id),
-    [isCompleted, isOpened, id, onClick],
-  );
+  const handleClick = () => !isCompleted && !isOpened && onClick(id);
 
-  const handleRightClick = React.useCallback(
-    (e) => {
-      e.preventDefault();
-      if (!isOpened) {
-        onRightClick(id);
-      }
-    },
-    [id, isOpened, onRightClick],
-  );
+  const handleRightClick = (e) => {
+    e.preventDefault();
+    if (!isOpened) {
+      onRightClick(id);
+    }
+  }
 
   console.log('Cell');
 

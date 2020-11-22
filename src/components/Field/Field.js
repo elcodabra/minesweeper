@@ -82,4 +82,4 @@ const Field = ({ rows = 50, columns = 50, bombsSize = 100 }) => {
   )
 }
 
-export default React.memo(Field);
+export default Field;
