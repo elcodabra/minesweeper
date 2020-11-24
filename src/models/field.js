@@ -1,5 +1,6 @@
-import { types, getRoot, destroy } from 'mobx-state-tree';
-import { getNumberById, getRandomArray, getSiblingsForId } from '../utils'
+import { types, getRoot } from 'mobx-state-tree';
+
+import { getNumberById, getRandomArray, getSiblingsForId, range } from '../utils';
 
 const Cell = types
   .model({
@@ -20,12 +21,12 @@ const Cell = types
 
 const FieldStore = types
   .model({
+    isGame: false,
     rows: types.number,
     columns: types.number,
     bombsSize: types.number,
     cells: types.array(Cell),
     bombs: types.array(types.number),
-    // filter: types.optional(filterType, SHOW_ALL)
   })
   .views((self) => ({
     get length() {
@@ -52,11 +53,15 @@ const FieldStore = types
     }
   }))
   .actions((self) => ({
-    setBombs() {
-      self.bombs = getRandomArray(self.length, self.bombsSize)
+    setInitial({ rows, columns, bombsSize }) {
+      self.rows = rows;
+      self.columns = columns;
+      self.bombsSize = bombsSize;
+      self.cells = range(1, self.length).map(id => ({ id }));
+      self.bombs = getRandomArray(self.length, self.bombsSize);
+      self.isGame = true;
     },
     setOpened(id) {
-      console.log('clicked=', id);
       if (self.bombs.indexOf(id) > -1) {
         self.cells.find(cell => cell.id === id).isFailed = true;
         self.cells.forEach((cell) => {

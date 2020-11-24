@@ -1,4 +1,8 @@
-import Field from './components/Field'
+import { observer } from 'mobx-react';
+
+import Field from './components/Field';
+import NewGame from './components/NewGame';
+
 import './App.css';
 
 function App({ store }) {
@@ -6,10 +10,14 @@ function App({ store }) {
     <div className="App">
       <header className="App-header">
         <p>Mine Sweeper</p>
-        <Field store={store} />
+        {store.isGame ? (
+          <Field store={store} />
+        ) : (
+          <NewGame store={store} />
+        )}
       </header>
     </div>
   );
 }
 
-export default App;
+export default observer(App);

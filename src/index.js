@@ -1,13 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { getSnapshot, destroy } from 'mobx-state-tree';
-import { connectReduxDevtools } from 'mst-middlewares';
 
 import './index.css';
 import App from './App';
 import FieldStore from './models/field';
 import reportWebVitals from './reportWebVitals';
-import { getRandomArray, range } from './utils'
 
 let store;
 let snapshotListener;
@@ -20,9 +18,6 @@ function createStore(snapshot) {
 
   // create new one
   store = FieldStore.create(snapshot)
-
-  // connect devtools
-  // connectReduxDevtools(require("remotedev"), store)
 
   return store
 }
@@ -45,8 +40,6 @@ renderApp(App, createStore({
   rows: ROWS,
   columns: COLUMNS,
   bombsSize: BOMBS,
-  cells: range(1, ROWS * COLUMNS).map(id => ({ id })),
-  bombs: getRandomArray(ROWS * COLUMNS, BOMBS).sort((a, b) => a- b),
 }))
 
 // If you want to start measuring performance in your app, pass a function
