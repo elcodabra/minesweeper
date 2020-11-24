@@ -1,16 +1,18 @@
 import React from 'react';
 
 import './Cell.css';
+import { observer } from 'mobx-react'
 
-const Cell = ({ id, number, isBomb, isCompleted, isFailed, onClick, onRightClick }) => {
+const Cell = ({ cell }) => {
+  const { number, isBomb, isCompleted, isFailed } = cell;
   const isOpened = number || number === 0;
 
-  const handleClick = () => !isCompleted && !isOpened && onClick(id);
+  const handleClick = () => !isCompleted && !isOpened && cell.open();
 
   const handleRightClick = (e) => {
     e.preventDefault();
     if (!isOpened) {
-      onRightClick(id);
+      cell.complete();
     }
   }
 
@@ -31,10 +33,4 @@ const Cell = ({ id, number, isBomb, isCompleted, isFailed, onClick, onRightClick
   )
 }
 
-export default React.memo(Cell/*, (prevProps, nextProps) => {
-  return prevProps.id === nextProps.id &&
-    prevProps.number === nextProps.number &&
-    prevProps.isBomb === nextProps.isBomb &&
-    prevProps.isFailed === nextProps.isFailed &&
-    prevProps.isCompleted === nextProps.isCompleted
-}*/);
+export default observer(Cell);

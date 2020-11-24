@@ -1,12 +1,12 @@
 import Field from './components/Field'
 import './App.css';
 
-function App() {
+function App({ store }) {
   return (
     <div className="App">
       <header className="App-header">
         <p>Mine Sweeper</p>
-        <Field />
+        <Field store={store} />
       </header>
     </div>
   );
