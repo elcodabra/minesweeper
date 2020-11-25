@@ -16,7 +16,7 @@ const Cell = ({ cell }) => {
     }
   }
 
-  console.log('Cell');
+  // console.log('Cell');
 
   return (
     <span

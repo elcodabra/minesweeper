@@ -1,5 +1,8 @@
 
-export const range = (start, stop, step = 1) => Array.from({ length: (stop - start) / step + 1}, (_, i) => start + (i * step));
+export const range = (start, stop, step = 1, mapFn = (_, i) => start + (i * step)) =>
+  Array.from({
+    length: (stop - start) / step + 1
+  }, mapFn);
 
 export const getRandomNumber = (excluded, size) => {
   let random = 0;

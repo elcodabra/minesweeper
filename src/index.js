@@ -31,9 +31,9 @@ function renderApp(App, store) {
   );
 }
 
-const ROWS = 5;
-const COLUMNS = 5;
-const BOMBS = 1;
+const ROWS = 50;
+const COLUMNS = 50;
+const BOMBS = 100;
 
 // Initial render
 renderApp(App, createStore({

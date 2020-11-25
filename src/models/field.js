@@ -22,6 +22,8 @@ const Cell = types
 const FieldStore = types
   .model({
     isGame: false,
+    isStarted: false,
+    failedCell: types.optional(types.union(types.number, types.literal(undefined)), undefined),
     rows: types.number,
     columns: types.number,
     bombsSize: types.number,
@@ -33,13 +35,16 @@ const FieldStore = types
       return self.rows * self.columns;
     },
     get openedCount() {
+      if (!self.isStarted) return 0;
+      if (self.failedCell) return self.length;
       return self.cells.reduce((count, cell) => (cell.number !== undefined ? count + 1 : count), 0)
     },
     get completedCount() {
+      if (!self.isStarted) return 0;
       return self.cells.reduce((count, cell) => (cell.isCompleted ? count + 1 : count), 0)
     },
     get hasFail() {
-      return !!self.cells.find(cell => cell.isFailed)
+      return !!self.failedCell;
     },
     get success() {
       if (self.hasFail) {
@@ -57,12 +62,13 @@ const FieldStore = types
       self.rows = rows;
       self.columns = columns;
       self.bombsSize = bombsSize;
-      self.cells = range(1, self.length).map(id => ({ id }));
+      self.cells = range(1, self.length, 1, (_, id) => ({ id }));
       self.bombs = getRandomArray(self.length, self.bombsSize);
       self.isGame = true;
     },
     setOpened(id) {
       if (self.bombs.indexOf(id) > -1) {
+        self.failedCell = id;
         self.cells.find(cell => cell.id === id).isFailed = true;
         self.cells.forEach((cell) => {
           cell.isBomb = self.bombs.indexOf(cell.id) > -1;
@@ -74,6 +80,7 @@ const FieldStore = types
           cell.number = siblings[cell.id];
         })
       }
+      if (!self.isStarted) self.isStarted = true;
     },
   }))
 
