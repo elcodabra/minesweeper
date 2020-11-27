@@ -36,7 +36,9 @@ const cellsSlice = createSlice({
       state.bombs = getRandomArray(length, state.bombsSize);
       state.isGame = true;
 
-      const cellsList = range(1, length, 1, (_, id) => ({ id }));
+      const cellsList = range(1, length, 1, (_, id) => ({
+        id: id + 1,
+      }));
       cellsAdapter.setAll(state, cellsList);
     },
     setOpened: (state, action) => {
@@ -48,7 +50,7 @@ const cellsSlice = createSlice({
           .filter(cell_id => state.entities[cell_id].number === undefined)
           .forEach((cell_id) => {
           state.entities[cell_id].isBomb = state.bombs.indexOf(cell_id) > -1;
-          state.entities[cell_id].number = getNumberById(cell_id + 1, state.rows, state.columns, state.bombs);
+          state.entities[cell_id].number = getNumberById(cell_id, state.rows, state.columns, state.bombs);
         });
       } else {
         const siblings = getSiblingsForId(id, state.rows, state.columns, state.bombs);
