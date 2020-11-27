@@ -18,7 +18,7 @@ export const getRandomArray = (length, bombsSize) => {
     // TODO: hide bomb number & add compare fn for num
     randoms[i] = getRandomNumber(randoms, length);
   }
-  return randoms;
+  return randoms.sort((a, b) => a - b);
 }
 
 export const getSiblings = (num, rows, columns) => {

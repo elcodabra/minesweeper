@@ -1,21 +1,27 @@
 import React from 'react';
-import { observer } from 'mobx-react';
+import { useSelector } from 'react-redux';
+
+import { selectColumns, selectSuccess, selectCellIds } from '../../app/reducer';
 
 import Cell from '../Cell';
 
 import './Field.css';
 
-const Field = ({ store }) => {
-  const { cells, columns } = store;
+const Field = () => {
+  const cells = useSelector(selectCellIds);
+  const columns = useSelector(selectColumns);
+  const success = useSelector(selectSuccess);
+
+  console.log('Field');
 
   return (
     <div className="Field">
-      {store.success !== null && (
+      {success !== null && (
         <div className="Field-message">
-          {store.success && (
+          {success && (
             <p>Your win!</p>
           )}
-          {!store.success && (
+          {!success && (
             <p>Fail!</p>
           )}
         </div>
@@ -24,18 +30,13 @@ const Field = ({ store }) => {
         className="Field-container"
         style={{
           gridTemplateColumns: `repeat(${columns}, 50px [col-start])`,
-          pointerEvents: store.success !== null ? 'none' : 'all',
+          pointerEvents: success !== null ? 'none' : 'all',
         }}
       >
-        {cells.map(cell => (
-          <Cell
-            key={`cell_${cell.id}`}
-            cell={cell}
-          />
-        ))}
+        {cells.map(id => <Cell key={`cell_${id}`} id={id} />)}
       </div>
     </div>
   )
 }
 
-export default observer(Field);
+export default Field;

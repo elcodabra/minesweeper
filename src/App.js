@@ -1,23 +1,29 @@
-import { observer } from 'mobx-react';
+import { useSelector } from 'react-redux';
+
+import { isGameSelect } from './app/reducer';
 
 import Field from './components/Field';
 import NewGame from './components/NewGame';
 
 import './App.css';
 
-function App({ store }) {
+function App() {
+  const isGame = useSelector(isGameSelect);
+
+  console.log('App');
+
   return (
     <div className="App">
       <header className="App-header">
         <p>Mine Sweeper</p>
-        {store.isGame ? (
-          <Field store={store} />
+        {isGame ? (
+          <Field />
         ) : (
-          <NewGame store={store} />
+          <NewGame />
         )}
       </header>
     </div>
   );
 }
 
-export default observer(App);
+export default App;

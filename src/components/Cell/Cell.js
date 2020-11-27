@@ -1,18 +1,21 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { setCompleted, setOpened, selectCellById } from '../../app/reducer';
 
 import './Cell.css';
-import { observer } from 'mobx-react'
 
-const Cell = ({ cell }) => {
-  const { number, isBomb, isCompleted, isFailed } = cell;
+const Cell = ({ id }) => {
+  const dispatch = useDispatch();
+  const { number, isBomb, isCompleted, isFailed } = useSelector(state => selectCellById(state, id));
   const isOpened = number || number === 0;
 
-  const handleClick = () => !isCompleted && !isOpened && cell.open();
+  const handleClick = () => !isCompleted && !isOpened && dispatch(setOpened(id));
 
   const handleRightClick = (e) => {
     e.preventDefault();
     if (!isOpened) {
-      cell.complete();
+      dispatch(setCompleted(id));
     }
   }
 
@@ -33,4 +36,4 @@ const Cell = ({ cell }) => {
   )
 }
 
-export default observer(Cell);
+export default React.memo(Cell);

@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
-import { observer } from 'mobx-react';
+import { useDispatch, useSelector } from 'react-redux';
 
-const NewGame = ({ store }) => {
+import {
+  selectBombsLength,
+  selectColumns,
+  selectRows,
+  setInitial
+} from '../../app/reducer';
+
+const NewGame = () => {
+  const rows = useSelector(selectRows);
+  const columns = useSelector(selectColumns);
+  const bombsSize = useSelector(selectBombsLength);
+  const dispatch = useDispatch();
+
   const [settings, setSettings] = useState({
-    rows: store.rows,
-    columns: store.columns,
-    bombsSize: store.bombsSize,
+    rows,
+    columns,
+    bombsSize,
   });
 
   const handleChange = (e) => {
@@ -20,9 +32,9 @@ const NewGame = ({ store }) => {
       <input type="number" name="rows" value={settings.rows} onChange={handleChange} />
       <input type="number" name="columns" value={settings.columns} onChange={handleChange} />
       <input type="number" name="bombsSize" value={settings.bombsSize} onChange={handleChange} />
-      <button onClick={() => store.setInitial(settings)}>Go!</button>
+      <button onClick={() => dispatch(setInitial(settings))}>Go!</button>
     </div>
   );
 }
 
-export default observer(NewGame);
+export default NewGame;
