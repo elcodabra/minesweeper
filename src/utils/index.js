@@ -7,7 +7,7 @@ export const range = (start, stop, step = 1, mapFn = (_, i) => start + (i * step
 export const getRandomNumber = (excluded, size) => {
   let random = 0;
   while (!random || excluded.indexOf(random) > -1) {
-    random = Math.floor(Math.random() * size);
+    random = Math.round(Math.random() * size);
   }
   return random;
 }
@@ -15,13 +15,14 @@ export const getRandomNumber = (excluded, size) => {
 export const getRandomArray = (length, bombsSize) => {
   let randoms = [];
   for (let i = 0; i < bombsSize; i++) {
-    // TODO: hide bomb number & add compare fn for num
     randoms[i] = getRandomNumber(randoms, length);
   }
   return randoms.sort((a, b) => a - b);
 }
 
 export const getSiblings = (num, rows, columns) => {
+  if (!num) return null;
+
   let siblings = [num];
 
   const x = num % columns || columns;
@@ -59,8 +60,11 @@ export const getSiblings = (num, rows, columns) => {
     }
   }
 
-  return siblings;
+  return siblings.sort((a, b) => a - b);
 }
+
+export const getNumberById = (id, rows, columns, bombs) =>
+  getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) > -1).length;
 
 export const getSiblingsForId = (id, rows, columns, bombs, siblings = {}) =>
   getSiblings(id, rows, columns).reduce((acc, curId, idx, src) => {
@@ -73,6 +77,3 @@ export const getSiblingsForId = (id, rows, columns, bombs, siblings = {}) =>
     }
     return { ...acc, [curId]: number };
   }, siblings);
-
-export const getNumberById = (id, rows, columns, bombs) =>
-  getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) > -1).length;
