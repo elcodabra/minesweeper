@@ -2,7 +2,6 @@
 import {
   createSlice,
   createEntityAdapter,
-  createSelector
 } from '@reduxjs/toolkit'
 
 import { BOMBS, COLUMNS, ROWS } from './constants';
@@ -46,21 +45,45 @@ const cellsSlice = createSlice({
       if (state.bombs.indexOf(id) > -1) {
         state.failedCell = id;
         state.entities[id].isFailed = true;
+        state.entities[id].isBomb = true;
         state.ids
           .filter(cell_id => state.entities[cell_id].number === undefined)
           .forEach((cell_id) => {
-          state.entities[cell_id].isBomb = state.bombs.indexOf(cell_id) > -1;
-          state.entities[cell_id].number = getNumberById(cell_id, state.rows, state.columns, state.bombs);
-        });
+            state.entities[cell_id].isBomb = state.bombs.indexOf(cell_id) > -1;
+            state.entities[cell_id].number = getNumberById(cell_id, state.rows, state.columns, state.bombs);
+            /*
+            const isBomb = state.bombs.indexOf(cell_id) > -1;
+            state.entities[cell_id].isBomb = isBomb;
+            if (!isBomb) {
+              state.entities[cell_id].number = getNumberById(cell_id, state.rows, state.columns, state.bombs);
+            } else {
+              state.entities[cell_id].number = 0;
+            }
+            */
+          });
       } else {
         const siblings = getSiblingsForId(id, state.rows, state.columns, state.bombs);
         state.ids
           .filter((cell_id) => siblings[cell_id] !== undefined)
-          .forEach((cell_id) => {
-          state.entities[cell_id].number = siblings[cell_id];
-        })
+          .forEach((cell_id) => state.entities[cell_id].number = siblings[cell_id])
+        /*
+        getSiblingsForId(id, state.rows, state.columns, state.bombs, {}, siblings => {
+          setTimeout(() => {
+            console.log(siblings);
+            state.ids
+              .filter((cell_id) => siblings[cell_id] !== undefined)
+              .forEach((cell_id) => state.entities[cell_id].number = siblings[cell_id])
+          })
+        });
+        */
       }
       if (!state.isStarted) state.isStarted = true;
+    },
+    setNumbers: (state, action) => {
+      const siblings = action.payload;
+      state.ids
+        .filter((cell_id) => siblings[cell_id] !== undefined)
+        .forEach((cell_id) => state.entities[cell_id].number = siblings[cell_id])
     },
     setCompleted: (state, action) => {
       const id = action.payload;
@@ -70,7 +93,7 @@ const cellsSlice = createSlice({
   },
 })
 
-export const { setInitial, setOpened, setCompleted } = cellsSlice.actions;
+export const { setInitial, setOpened, setCompleted, setNumbers } = cellsSlice.actions;
 
 // Export the customized selectors for this adapter using `getSelectors`
 export const {
@@ -83,6 +106,7 @@ export const {
 export const selectSuccess = state => null;
 export const selectRows = state => state.rows;
 export const selectColumns = state => state.columns;
+export const selectBombs = state => state.bombs;
 export const selectBombsLength = state => state.bombsSize;
 
 export const isGameSelect = state => state.isGame;

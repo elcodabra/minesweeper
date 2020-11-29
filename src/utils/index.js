@@ -60,20 +60,36 @@ export const getSiblings = (num, rows, columns) => {
     }
   }
 
-  return siblings.sort((a, b) => a - b);
+  return siblings; //.sort((a, b) => a - b);
 }
 
 export const getNumberById = (id, rows, columns, bombs) =>
   getSiblings(id, rows, columns).filter(id => bombs.indexOf(id) > -1).length;
 
-export const getSiblingsForId = (id, rows, columns, bombs, siblings = {}) =>
-  getSiblings(id, rows, columns).reduce((acc, curId, idx, src) => {
+export const getSiblingsForId = (id, rows, columns, bombs, siblings = {}, fn = () => {}, counter = 0) => {
+  if (counter === 50) {
+    counter = 0;
+
+    fn(siblings);
+    /*
+    setTimeout(({ id, counter }) => {
+      getSiblingsForId(id, rows, columns, bombs, { ...siblings }, fn, counter)
+    }, 0, { id, counter });
+
+    return siblings;
+    */
+  } else {
+    counter++;
+  }
+
+  return getSiblings(id, rows, columns).reduce((acc, curId) => {
     // return if already in set or have bomb
     if (acc[curId] !== undefined || bombs.indexOf(curId) > -1) return acc;
 
     const number = getNumberById(curId, rows, columns, bombs);
     if (!number) {
-      return getSiblingsForId(curId, rows, columns, bombs, { ...acc, [curId]: number });
+      return getSiblingsForId(curId, rows, columns, bombs, { ...acc, [curId]: number }, fn, counter);
     }
     return { ...acc, [curId]: number };
   }, siblings);
+}
