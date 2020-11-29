@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { setCompleted, setOpened, selectCellById } from '../../app/reducer';
@@ -27,11 +28,7 @@ const Cell = ({ id }) => {
 
   return (
     <span
-      className="Cell"
-      style={{
-        backgroundColor: isFailed ? 'red' : isOpened ? 'white' : 'gray',
-        color: 'gray',
-      }}
+      className={cx('Cell', { 'Cell--opened': isOpened }, { 'Cell--failed': isFailed })}
       onClick={handleClick}
       onContextMenu={handleRightClick}
     >

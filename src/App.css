@@ -12,3 +12,16 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
+.Cell {
+  background-color: gray;
+  color: gray;
+}
+
+.Cell--opened {
+  background-color: white;
+}
+
+.Cell--failed {
+  background-color: red;
+}

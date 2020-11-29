@@ -1,4 +1,4 @@
-import { getSiblingsForId, getRandomArray } from '../';
+import { getSiblingsForId } from '../';
 
 const ROWS_10 = 10;
 const COLUMNS_10 = 10;
