@@ -2,10 +2,12 @@
 import {
   createSlice,
   createEntityAdapter,
-} from '@reduxjs/toolkit'
+} from '@reduxjs/toolkit';
 
 import { BOMBS, COLUMNS, ROWS } from './constants';
 import { getNumberById, getRandomArray, getSiblingsForId, range } from '../utils';
+
+import worker from '../worker';
 
 const cellsAdapter = createEntityAdapter({
   sortComparer: (a, b) => a - b,
@@ -42,10 +44,20 @@ const cellsSlice = createSlice({
     },
     setOpened: (state, action) => {
       const id = action.payload;
+
+      // plain object
+      worker.postMessage(JSON.parse(JSON.stringify({
+        id,
+        rows: state.rows,
+        columns: state.columns,
+        bombs: state.bombs,
+      })));
+
       if (state.bombs.indexOf(id) > -1) {
         state.failedCell = id;
         state.entities[id].isFailed = true;
         state.entities[id].isBomb = true;
+        /*
         state.ids
           .filter(cell_id => state.entities[cell_id].number === undefined)
           .forEach((cell_id) => {
@@ -57,6 +69,7 @@ const cellsSlice = createSlice({
               state.entities[cell_id].number = 0;
             }
           });
+        */
       } else {
         const siblings = getSiblingsForId(id, state.rows, state.columns, state.bombs);
         state.ids
