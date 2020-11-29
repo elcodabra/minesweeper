@@ -49,9 +49,6 @@ const cellsSlice = createSlice({
         state.ids
           .filter(cell_id => state.entities[cell_id].number === undefined)
           .forEach((cell_id) => {
-            state.entities[cell_id].isBomb = state.bombs.indexOf(cell_id) > -1;
-            state.entities[cell_id].number = getNumberById(cell_id, state.rows, state.columns, state.bombs);
-            /*
             const isBomb = state.bombs.indexOf(cell_id) > -1;
             state.entities[cell_id].isBomb = isBomb;
             if (!isBomb) {
@@ -59,7 +56,6 @@ const cellsSlice = createSlice({
             } else {
               state.entities[cell_id].number = 0;
             }
-            */
           });
       } else {
         const siblings = getSiblingsForId(id, state.rows, state.columns, state.bombs);
