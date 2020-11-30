@@ -15,6 +15,7 @@
     "redux": "^4.0.5",
     "web-vitals": "^0.2.4"
   },
+  "main": "index.js",
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
