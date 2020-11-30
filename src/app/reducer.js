@@ -25,6 +25,7 @@ const cellsSlice = createSlice({
     failedCell: null,
 
     completed: 0,
+    opened: 0,
 
     bombs: [],
   }),
@@ -47,14 +48,6 @@ const cellsSlice = createSlice({
     setOpened: (state, action) => {
       const id = action.payload;
 
-      // plain object
-      worker.postMessage(JSON.parse(JSON.stringify({
-        id,
-        rows: state.rows,
-        columns: state.columns,
-        bombs: state.bombs,
-      })));
-
       if (state.bombs.indexOf(id) > -1) {
         state.failedCell = id;
         state.entities[id].isFailed = true;
@@ -71,6 +64,14 @@ const cellsSlice = createSlice({
             }
           });
       } else {
+        // plain object
+        worker.postMessage(JSON.parse(JSON.stringify({
+          id,
+          rows: state.rows,
+          columns: state.columns,
+          bombs: state.bombs,
+        })));
+        /*
         const siblings = getSiblingsForId(id, state.rows, state.columns, state.bombs);
         state.ids
           .filter((cell_id) => siblings[cell_id] !== undefined)
@@ -81,14 +82,22 @@ const cellsSlice = createSlice({
               state.completed -= 1;
             }
           })
+         */
       }
       if (!state.isStarted) state.isStarted = true;
     },
     setNumbers: (state, action) => {
       const siblings = action.payload;
       state.ids
-        .filter((cell_id) => siblings[cell_id] !== undefined)
-        .forEach((cell_id) => state.entities[cell_id].number = siblings[cell_id])
+        .filter((cell_id) => siblings[cell_id] !== undefined && state.entities[cell_id].number === undefined)
+        .forEach((cell_id) => {
+          state.entities[cell_id].number = siblings[cell_id]
+          state.opened += 1;
+          if (state.entities[cell_id].isCompleted) {
+            state.entities[cell_id].isComplete = false;
+            state.completed -= 1;
+          }
+        })
     },
     setCompleted: (state, action) => {
       const id = action.payload;
@@ -109,7 +118,18 @@ export const {
   // Pass in a selector that returns the posts slice of state
 } = cellsAdapter.getSelectors()
 
-export const selectSuccess = state => null;
+export const selectIsSuccess = state => {
+  if (state.failedCell) {
+    return false;
+  }
+
+  if (state.completed === state.bombsSize &&
+    state.opened + state.completed === state.rows * state.columns) {
+    return true;
+  }
+
+  return null;
+}
 export const selectRows = state => state.rows;
 export const selectColumns = state => state.columns;
 export const selectBombs = state => state.bombs;

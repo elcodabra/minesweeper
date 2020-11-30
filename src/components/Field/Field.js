@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import { selectColumns, selectSuccess, selectCellIds } from '../../app/reducer';
+import { selectColumns, selectIsSuccess, selectCellIds } from '../../app/reducer';
 
 import Cell from '../Cell';
 import LeftBombs from '../LeftBombs';
@@ -11,7 +11,7 @@ import './Field.css';
 const Field = () => {
   const cells = useSelector(selectCellIds);
   const columns = useSelector(selectColumns);
-  const success = useSelector(selectSuccess);
+  const success = useSelector(selectIsSuccess);
 
   return (
     <div className="Field">

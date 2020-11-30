@@ -1,4 +1,4 @@
 
-export const ROWS = 50;
-export const COLUMNS = 50;
-export const BOMBS = 50;
+export const ROWS = 10;
+export const COLUMNS = 10;
+export const BOMBS = 10;
