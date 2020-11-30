@@ -2,12 +2,13 @@ import React from 'react';
 import cx from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { setCompleted, setOpened, selectCellById } from '../../app/reducer';
+import { setCompleted, setOpened, selectCellById, selectBombsLeft } from '../../app/reducer';
 
 import './Cell.css';
 
 const Cell = ({ id }) => {
   const dispatch = useDispatch();
+  const left = useSelector(selectBombsLeft);
   const { number, isBomb, isCompleted, isFailed } = useSelector(state => selectCellById(state, id));
   const isOpened = number || number === 0;
 
@@ -19,7 +20,7 @@ const Cell = ({ id }) => {
 
   const handleRightClick = (e) => {
     e.preventDefault();
-    if (isOpened) return;
+    if (isOpened || !left) return;
 
     dispatch(setCompleted(id));
   }

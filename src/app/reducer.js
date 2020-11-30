@@ -24,7 +24,9 @@ const cellsSlice = createSlice({
     isStarted: false,
     failedCell: null,
 
-    bombs: [], // TODO: bombs?? || bombs = {}
+    completed: 0,
+
+    bombs: [],
   }),
   reducers: {
     setInitial: (state, action) => {
@@ -57,7 +59,6 @@ const cellsSlice = createSlice({
         state.failedCell = id;
         state.entities[id].isFailed = true;
         state.entities[id].isBomb = true;
-        /*
         state.ids
           .filter(cell_id => state.entities[cell_id].number === undefined)
           .forEach((cell_id) => {
@@ -69,22 +70,17 @@ const cellsSlice = createSlice({
               state.entities[cell_id].number = 0;
             }
           });
-        */
       } else {
         const siblings = getSiblingsForId(id, state.rows, state.columns, state.bombs);
         state.ids
           .filter((cell_id) => siblings[cell_id] !== undefined)
-          .forEach((cell_id) => state.entities[cell_id].number = siblings[cell_id])
-        /*
-        getSiblingsForId(id, state.rows, state.columns, state.bombs, {}, siblings => {
-          setTimeout(() => {
-            console.log(siblings);
-            state.ids
-              .filter((cell_id) => siblings[cell_id] !== undefined)
-              .forEach((cell_id) => state.entities[cell_id].number = siblings[cell_id])
+          .forEach((cell_id) => {
+            state.entities[cell_id].number = siblings[cell_id]
+            if (state.entities[cell_id].isCompleted) {
+              state.entities[cell_id].isComplete = false;
+              state.completed -= 1;
+            }
           })
-        });
-        */
       }
       if (!state.isStarted) state.isStarted = true;
     },
@@ -98,6 +94,7 @@ const cellsSlice = createSlice({
       const id = action.payload;
       const current = state.entities[id];
       current.isCompleted = !current.isCompleted;
+      state.completed += current.isCompleted ? 1 : -1;
     },
   },
 })
@@ -117,6 +114,7 @@ export const selectRows = state => state.rows;
 export const selectColumns = state => state.columns;
 export const selectBombs = state => state.bombs;
 export const selectBombsLength = state => state.bombsSize;
+export const selectBombsLeft = state => state.bombsSize - state.completed;
 
 export const isGameSelect = state => state.isGame;
 

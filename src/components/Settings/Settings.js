@@ -8,7 +8,7 @@ import {
   setInitial
 } from '../../app/reducer';
 
-const NewGame = () => {
+const Settings = () => {
   const rows = useSelector(selectRows);
   const columns = useSelector(selectColumns);
   const bombsSize = useSelector(selectBombsLength);
@@ -37,4 +37,4 @@ const NewGame = () => {
   );
 }
 
-export default NewGame;
+export default Settings;
