@@ -5,7 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 
 import { BOMBS, COLUMNS, ROWS } from './constants';
-import { getNumberById, getRandomArray, getSiblingsForId, range } from '../utils';
+import { getNumberById, getRandomArray, range } from '../utils';
 
 import worker from '../worker';
 
@@ -30,6 +30,9 @@ const cellsSlice = createSlice({
     bombs: [],
   }),
   reducers: {
+    setNewGame: (state) => {
+      state.isGame = false;
+    },
     setInitial: (state, action) => {
       const { rows, columns, bombsSize } = action.payload;
       state.rows = rows;
@@ -39,6 +42,7 @@ const cellsSlice = createSlice({
       const length = rows * columns;
       state.bombs = getRandomArray(length, state.bombsSize);
       state.isGame = true;
+      state.isStarted = false;
 
       const cellsList = range(1, length, 1, (_, id) => ({
         id: id + 1,
@@ -108,7 +112,7 @@ const cellsSlice = createSlice({
   },
 })
 
-export const { setInitial, setOpened, setCompleted, setNumbers } = cellsSlice.actions;
+export const { setNewGame, setInitial, setOpened, setCompleted, setNumbers } = cellsSlice.actions;
 
 // Export the customized selectors for this adapter using `getSelectors`
 export const {
