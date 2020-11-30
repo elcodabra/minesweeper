@@ -40,7 +40,6 @@ const cellsSlice = createSlice({
       state.bombsSize = bombsSize;
 
       const length = rows * columns;
-      state.bombs = getRandomArray(length, state.bombsSize);
       state.isGame = true;
       state.isStarted = false;
 
@@ -52,7 +51,12 @@ const cellsSlice = createSlice({
     setOpened: (state, action) => {
       const id = action.payload;
 
-      if (state.bombs.indexOf(id) > -1) {
+      if (!state.isStarted) {
+        state.isStarted = true;
+        state.bombs = getRandomArray(state.rows * state.columns, state.bombsSize, [id]);
+      }
+
+      if (state.isStarted && state.bombs.indexOf(id) > -1) {
         state.failedCell = id;
         state.entities[id].isFailed = true;
         state.entities[id].isBomb = true;
@@ -88,7 +92,6 @@ const cellsSlice = createSlice({
           })
          */
       }
-      if (!state.isStarted) state.isStarted = true;
     },
     setNumbers: (state, action) => {
       const siblings = action.payload;

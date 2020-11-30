@@ -12,10 +12,10 @@ export const getRandomNumber = (excluded, size) => {
   return random;
 }
 
-export const getRandomArray = (length, bombsSize) => {
+export const getRandomArray = (length, size, excluded = []) => {
   let randoms = [];
-  for (let i = 0; i < bombsSize; i++) {
-    randoms[i] = getRandomNumber(randoms, length);
+  for (let i = 0; i < size; i++) {
+    randoms[i] = getRandomNumber([...randoms, ...excluded], length);
   }
   return randoms.sort((a, b) => a - b);
 }
